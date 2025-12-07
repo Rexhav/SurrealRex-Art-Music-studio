@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurrealRex Studio | Guitar & Art Academy</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-cream: #F9F7F2;
+            --text-charcoal: #2D2D2D;
+            --text-grey: #555555;
+            --accent-terracotta: #C67B5C;
+            --accent-sage: #8DA399;
+            --white: #FFFFFF;
+            --font-heading: 'Cormorant Garamond', serif;
+            --font-body: 'Inter', sans-serif;
+            --container-width: 1100px;
+            --radius-lg: 24px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; /* Hide default cursor for custom one */ }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-charcoal);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px; height: 8px;
+            background-color: var(--text-charcoal);
+        }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 1px solid var(--text-charcoal);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        /* Hover state for links */
+        body.hovering .cursor-outline {
+            width: 60px; height: 60px;
+            background-color: rgba(198, 123, 92, 0.1);
+            border-color: var(--accent-terracotta);
+        }
+
+        /* --- FLOATING PARTICLES BACKGROUND --- */
+        .particle-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .floating-item {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.15;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3 { font-family: var(--font-heading); font-weight: 600; line-height: 1.1; }
+        p { line-height: 1.6; color: var(--text-grey); font-weight: 300; }
+        .container { max-width: var(--container-width); margin: 0 auto; padding: 0 20px; }
+        .italic { font-style: italic; }
+        .accent-text { color: var(--accent-terracotta); }
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        .btn-primary {
+            background-color: var(--accent-terracotta);
+            color: var(--white);
+            box-shadow: 0 5px 20px rgba(198, 123, 92, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            background-color: #b06548;
+        }
+        .btn-whatsapp {
+            background-color: #25D366; color: white; border: 1px solid #25D366;
+        }
+        .btn-whatsapp:hover { background-color: #128C7E; transform: translateY(-3px); }
+        .btn-insta {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+        .btn-insta:hover { opacity: 0.9; transform: translateY(-3px); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: 95vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            align-items: center;
+        }
+        .hero h1 { font-size: 4.5rem; margin-bottom: 20px; position: relative; z-index: 2; }
+        .hero p { font-size: 1.2rem; margin-bottom: 40px; max-width: 90%; }
+        
+        /* Interactive Hero Visual */
+        .hero-visual {
+            position: relative;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px; /* For 3D effect */
+        }
+        
+        .layer {
+            position: absolute;
+            transition: transform 0.1s ease-out;
+        }
+        
+        /* The Guitar/Tree Shape */
+        .shape-main {
+            width: 220px; height: 380px;
+            background: var(--text-charcoal);
+            border-radius: 60px 60px 140px 140px;
+            box-shadow: 20px 20px 60px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+        /* Floating Elements around guitar */
+        .float-icon {
+            font-size: 3rem;
+            position: absolute;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+        }
+
+        /* --- PROGRAMS --- */
+        .programs { padding: 100px 20px; background: linear-gradient(180deg, var(--bg-cream) 0%, #fff 100%); }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 50px;
+        }
+        
+        .program-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 50px 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease; /* Fast transform for JS tilt */
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        /* Header & Tags */
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .age-tag {
+            background: #eee; padding: 6px 14px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px;
+            text-transform: uppercase; display: inline-block; margin-bottom: 15px;
+        }
+        .card-icon { font-size: 3.5rem; transition: transform 0.3s; }
+        .program-card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
+
+        /* Curriculum List */
+        .curriculum-block { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ddd; }
+        .curriculum-title { font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 12px; font-weight: 600; }
+        .curriculum-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; list-style: none; }
+        .curriculum-list li { font-size: 0.95rem; position: relative; padding-left: 18px; color: #666; }
+        .curriculum-list li::before { content: "•"; position: absolute; left: 0; color: var(--accent-terracotta); font-size: 1.2rem; line-height: 1rem;}
+
+        /* Pricing */
+        .price-box {
+            margin-top: 35px; background: #fafafa; border: 1px solid #eee;
+            padding: 20px; border-radius: 12px; text-align: center;
+        }
+        .price-final { font-size: 1.8rem; font-weight: 700; color: var(--text-charcoal); }
+        .price-original { text-decoration: line-through; color: #aaa; font-size: 1rem; margin-right: 10px; }
+
+        /* --- COMPARISON TABLE --- */
+        .comparison { padding: 80px 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 40px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        th { background: #f4f4f4; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; padding: 20px; text-align: left; }
+        td { padding: 20px; border-bottom: 1px solid #eee; color: #555; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #fafafa; }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--text-charcoal);
+            color: var(--white);
+            padding: 100px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .contact-links { margin: 40px 0; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .address-block { margin-top: 50px; padding: 30px; border: 1px solid rgba(255,255,255,0.1); display: inline-block; border-radius: 12px; }
+        .address-block p { color: #ccc; margin-bottom: 5px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero h1 { font-size: 3rem; }
+            .hero-visual { display: none; } /* Hide 3D visual on mobile to save space */
+            .card-grid { grid-template-columns: 1fr; }
+            .curriculum-list { grid-template-columns: 1fr; }
+            /* Restore default cursor for touch devices */
+            * { cursor: auto; }
+            .cursor-dot, .cursor-outline { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <div class="particle-container" id="particle-container"></div>
+
+    <nav style="position: absolute; width:100%; top:0; padding:30px; z-index:10; display:flex; justify-content:space-between;">
+        <div class="logo" style="font-family:var(--font-heading); font-weight:700; font-size:1.5rem;">SurrealRex Studio.</div>
+        <a href="#contact" class="hover-target" style="text-decoration:none; color:inherit; font-weight:500;">Admissions Open</a>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <h1>Where Melodies Bloom & <br><span class="italic accent-text">Art Comes Alive.</span></h1>
+                    <p>A private, creative sanctuary for serious learners. From absolute beginners to advanced artists.<br><strong>Ages 5 to Ageless.</strong></p>
+                    <div style="margin-top: 30px;">
+                        <a href="#contact" class="btn btn-primary hover-target">Join First Batch</a>
+                        <a href="#programs" class="hover-target" style="margin-left: 20px; color: var(--text-charcoal); text-decoration: underline;">Explore Curriculum</a>
+                    </div>
+                </div>
+                
+                <div class="hero-visual" id="hero-visual">
+                    <div class="layer shape-main" data-speed="2"></div>
+                    
+                    <div class="layer float-icon" data-speed="5" style="top: 20%; right: 10%; color: var(--accent-terracotta);">🎵</div>
+                    <div class="layer float-icon" data-speed="-4" style="bottom: 20%; left: -10%; color: var(--accent-sage);">🎨</div>
+                    
+                    <div class="layer" data-speed="3" style="position:absolute; width:60px; height:60px; background:var(--accent-sage); border-radius:50% 0 50% 0; top:-20px; left:40px; opacity:0.8;"></div>
+                    <div class="layer" data-speed="-2" style="position:absolute; width:40px; height:40px; background:var(--accent-terracotta); border-radius:50%; bottom:50px; right:-20px; opacity:0.6;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="programs" class="programs">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 60px;">The Curriculum</h2>
+            
+            <div class="card-grid">
+                <div class="program-card hover-target" id="card-guitar">
+                    <div class="card-header">
+                        <div><span class="age-tag">Age 5 to Ageless</span><h3 style="font-size:2rem;">Guitar Program</h3></div>
+                        <div class="card-icon" style="color: var(--accent-terracotta);">🎸</div>
+                    </div>
+                    <p>From holding the plectrum to mastering fretboard theory. We cover Foundation through Advanced techniques.</p>
+
+                    <div class="curriculum-block">
+                        <div class="curriculum-title">Foundation (Level 1)</div>
+                        <ul class="curriculum-list">
+                            <li>Finger Independence</li><li>Reading Tablature</li>
+                            <li>Open Chords (Maj/Min)</li><li>Rhythmic Strumming</li>
+                            <li>Timing & Metronome</li><li>First 3 Songs</li>
+                        </ul>
+                    </div>
+                    <div class="curriculum-block">
+                        <div class="curriculum-title">Intermediate/Advanced</div>
+                        <ul class="curriculum-list">
+                            <li>Barre Chords Mastery</li><li>Scales (Pentatonic)</li>
+                            <li>Fingerstyle Picking</li><li>Improvisation Basics</li>
+                        </ul>
+                    </div>
+                    <div class="price-box">
+                        <p style="margin-bottom:5px;"><strong>Duration:</strong> 1 Hour / Class</p>
+                        <div class="price-final"><span class="price-original">₹4400</span> ₹3740</div>
+                        <small style="color:var(--accent-terracotta); font-weight:600;">15% OFF First Batch</small>
+                    </div>
+                </div>
+
+                <div class="program-card hover-target" id="card-art">
+                    <div class="card-header">
+                        <div><span class="age-tag">Age 5 to Ageless</span><h3 style="font-size:2rem;">Art Program</h3></div>
+                        <div class="card-icon" style="color: var(--accent-sage);">🖌️</div>
+                    </div>
+                    <p>Moving beyond "crafts" into serious artistic observation. Learn to see, structure, and render reality.</p>
+
+                    <div class="curriculum-block">
+                        <div class="curriculum-title">Foundation (Level 1)</div>
+                        <ul class="curriculum-list" style="li::before { color: var(--accent-sage); }">
+                            <li>Shape & Form</li><li>Line Confidence</li>
+                            <li>Value & Shading</li><li>Color Theory 101</li>
+                            <li>Still Life Study</li><li>Medium Control</li>
+                        </ul>
+                    </div>
+                    <div class="curriculum-block">
+                        <div class="curriculum-title">Intermediate/Advanced</div>
+                        <ul class="curriculum-list">
+                            <li>Loomis Head Method</li><li>Human Anatomy</li>
+                            <li>Perspective (1, 2, 3 Pt)</li><li>Composition Rules</li>
+                        </ul>
+                    </div>
+                    <div class="price-box">
+                        <p style="margin-bottom:5px;"><strong>Duration:</strong> 1 Hour / Class</p>
+                        <div class="price-final"><span class="price-original">₹5400</span> ₹4590</div>
+                        <small style="color:var(--accent-sage); font-weight:600;">15% OFF First Batch</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="comparison">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 30px;">Program Details</h2>
+            <table>
+                <thead>
+                    <tr><th>Detail</th><th>Guitar</th><th>Fine Art</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Class Duration</strong></td><td>1 Hour</td><td>1 Hour</td></tr>
+                    <tr><td><strong>Frequency</strong></td><td>2x Per Week</td><td>2x Per Week</td></tr>
+                    <tr><td><strong>Age Group</strong></td><td>5 Years - Ageless</td><td>5 Years - Ageless</td></tr>
+                    <tr><td><strong>Levels</strong></td><td>Beginner - Advanced</td><td>Beginner - Advanced</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <h2 style="font-size: 3rem; margin-bottom: 20px;">Begin Your Journey</h2>
+            <p>Secure your spot in the upcoming batch.</p>
+            
+            <div class="contact-links">
+                <a href="https://wa.me/918447981683" target="_blank" class="btn btn-whatsapp hover-target">Chat on WhatsApp</a>
+                <a href="https://www.instagram.com/_surrealrex?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="btn btn-insta hover-target">Follow on Instagram</a>
+            </div>
+
+            <div class="address-block">
+                <p style="color: var(--accent-terracotta); font-weight: 600; letter-spacing: 1px;">THE VENUE</p>
+                <p style="font-size: 1.2rem; color: white; margin-top: 10px;">Mapsko Royale Ville, Elite</p>
+                <p>Sector 82, Gurugram</p>
+                <br>
+                <p>+91 84479 81683</p>
+            </div>
+            
+            <br><br>
+            <p style="font-size: 0.8rem; opacity: 0.4;">© 2025 SurrealRex Studio. Handcrafted with precision.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. CUSTOM CURSOR
+        const cursorDot = document.getElementById("cursor-dot");
+        const cursorOutline = document.getElementById("cursor-outline");
+        const hoverTargets = document.querySelectorAll(".hover-target");
+
+        window.addEventListener("mousemove", (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // Dot follows instantly
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // Outline follows with slight delay (smoothness)
+            cursorOutline.style.left = `${posX}px`;
+            cursorOutline.style.top = `${posY}px`;
+            
+            // Animation logic for outline drag is handled by CSS transition
+        });
+
+        // Hover Effect Expansion
+        hoverTargets.forEach(el => {
+            el.addEventListener("mouseenter", () => document.body.classList.add("hovering"));
+            el.addEventListener("mouseleave", () => document.body.classList.remove("hovering"));
+        });
+
+        // 2. HERO PARALLAX (MOUSE INTERACTION)
+        const heroSection = document.querySelector('.hero');
+        const layers = document.querySelectorAll('.layer');
+
+        if (window.innerWidth > 768) {
+            heroSection.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth - e.pageX * 2) / 100;
+                const y = (window.innerHeight - e.pageY * 2) / 100;
+
+                layers.forEach(layer => {
+                    const speed = layer.getAttribute('data-speed');
+                    const xPos = x * speed;
+                    const yPos = y * speed;
+                    layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
+                });
+            });
+        }
+
+        // 3. FLOATING BACKGROUND PARTICLES SYSTEM
+        const particleContainer = document.getElementById('particle-container');
+        const icons = ['🎵', '🎨', '🖌️', '🎼', '✨'];
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('floating-item');
+            
+            // Random Icon
+            particle.innerText = icons[Math.floor(Math.random() * icons.length)];
+            
+            // Random Position
+            particle.style.left = Math.random() * 100 + 'vw';
+            
+            // Random Size
+            const size = Math.random() * 2 + 1; // 1rem to 3rem
+            particle.style.fontSize = size + 'rem';
+            
+            // Random Duration
+            const duration = Math.random() * 10 + 10; // 10s to 20s
+            particle.style.animationDuration = duration + 's';
+
+            particleContainer.appendChild(particle);
+
+            // Remove after animation finishes
+            setTimeout(() => {
+                particle.remove();
+            }, duration * 1000);
+        }
+
+        // Create a new particle every 800ms
+        setInterval(createParticle, 800);
+
+        // 4. 3D TILT EFFECT FOR CARDS
+        const cards = document.querySelectorAll('.program-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -5; // Max 5 deg rotation
+                const rotateY = ((x - centerX) / centerX) * 5;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
+            });
+        });
+
+    </script>
+</body>
+</html>
